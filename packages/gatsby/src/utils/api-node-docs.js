@@ -40,10 +40,14 @@ exports.resolvableExtensions = true
  *         // Create blog post pages.
  *         result.data.allMarkdownRemark.edges.forEach(edge => {
  *             createPage({
- *               path: `${edge.node.fields.slug}`, // required
- *               component: slash(blogPostTemplate),
+ *               path: `edge.node.fields.slug`, // required
+ *               component: blogPostTemplate,
  *               context: {
- *                 slug: edge.node.fields.slug,
+ *                 // Add optional context data. Data can be used as
+ *                 // arguments to the page GraphQL query.
+ *                 //
+ *                 // The page "path" is always available as a GraphQL
+ *                 // argument.
  *               },
  *             })
  *         })
@@ -73,22 +77,6 @@ exports.createPages = true
  * add and remove pages.
  */
 exports.createPagesStatefully = true
-
-/**
- * Tell plugins to add layouts. This extension point is called only after the initial
- * sourcing and transformation of nodes plus creation of the GraphQL schema are
- * complete so you can query your data in order to create layouts.
- *
- * See also the documentation for [`createLayout`](/docs/actions/#createLayout).
- * @example
- * exports.createLayouts = ({ graphql, actions }) => {
- *  actions.createLayout({
- *    component: path.resolve(`src/templates/custom-layout.js`),
- *    id: 'custom', // optional - if not provided the filename will be used as id
- *   })
- *  }
- */
-exports.createLayouts = true
 
 /**
  * Extension point to tell plugins to source nodes.
@@ -126,12 +114,6 @@ exports.onCreateNode = true
  * for more on this API.
  */
 exports.onCreatePage = true
-
-/**
- * Called when a new layout is created. This extension API is useful
- * for programmatically manipulating layouts created by other plugins
- */
-exports.onCreateLayout = true
 
 /**
  * Called during the creation of the GraphQL schema. Allows plugins

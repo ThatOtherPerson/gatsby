@@ -3,7 +3,6 @@ require(`v8-compile-cache`)
 const fs = require(`fs`)
 const path = require(`path`)
 const dotenv = require(`dotenv`)
-const StaticSiteGeneratorPlugin = require(`static-site-generator-webpack-plugin`)
 const FriendlyErrorsWebpackPlugin = require(`friendly-errors-webpack-plugin`)
 const { store } = require(`../redux`)
 const { actions } = require(`../redux/actions`)
@@ -24,8 +23,7 @@ module.exports = async (
   program,
   directory,
   suppliedStage,
-  webpackPort = 1500,
-  pages = []
+  webpackPort = 1500
 ) => {
   const directoryPath = withBasePath(directory)
 
@@ -116,6 +114,7 @@ module.exports = async (
       case `develop`:
         return {
           commons: [
+            require.resolve(`react-hot-loader/patch`),
             `${require.resolve(`webpack-hot-middleware/client`)}?path=http://${
               program.host
             }:${webpackPort}/__webpack_hmr&reload=true&overlay=false`,
@@ -144,27 +143,22 @@ module.exports = async (
       plugins.moment(),
 
       // Add a few global variables. Set NODE_ENV to production (enables
-      // optimizations for React) and whether prefixing links is enabled
-      // (__PREFIX_PATHS__) and what the link prefix is (__PATH_PREFIX__).
+      // optimizations for React) and what the link prefix is (__PATH_PREFIX__).
       plugins.define({
         "process.env": processEnv(stage, `development`),
-        __PREFIX_PATHS__: program.prefixPaths,
-        __PATH_PREFIX__: JSON.stringify(store.getState().config.pathPrefix),
+        __PATH_PREFIX__: JSON.stringify(
+          program.prefixPaths ? store.getState().config.pathPrefix : ``
+        ),
       }),
-
-      plugins.extractText(
-        stage === `develop`
-          ? {
-              filename: `[name].css`,
-              chunkFilename: `[name].css`,
-            }
-          : {}
-      ),
     ]
 
     switch (stage) {
       case `develop`:
         configPlugins = configPlugins.concat([
+          plugins.extractText({
+            filename: `[name].css`,
+            chunkFilename: `[name].css`,
+          }),
           plugins.hotModuleReplacement(),
           plugins.noEmitOnErrors(),
 
@@ -183,15 +177,9 @@ module.exports = async (
           }),
         ])
         break
-
-      case `develop-html`:
-      case `build-html`:
-        configPlugins = configPlugins.concat([
-          new StaticSiteGeneratorPlugin(`render-page.js`, pages),
-        ])
-        break
       case `build-javascript`: {
         configPlugins = configPlugins.concat([
+          plugins.extractText(),
           // Minify Javascript.
           plugins.uglify({
             uglifyOptions: {
@@ -204,29 +192,32 @@ module.exports = async (
           // components) to all their async chunks.
           {
             apply: function(compiler) {
-              compiler.plugin(`done`, function(stats, done) {
-                let assets = {}
+              compiler.hooks.done.tapAsync(
+                `gatsby-webpack-stats-extractor`,
+                (stats, done) => {
+                  let assets = {}
 
-                for (let chunkGroup of stats.compilation.chunkGroups) {
-                  if (chunkGroup.name) {
-                    let files = []
-                    for (let chunk of chunkGroup.chunks) {
-                      files.push(...chunk.files)
+                  for (let chunkGroup of stats.compilation.chunkGroups) {
+                    if (chunkGroup.name) {
+                      let files = []
+                      for (let chunk of chunkGroup.chunks) {
+                        files.push(...chunk.files)
+                      }
+                      assets[chunkGroup.name] = files.filter(
+                        f => f.slice(-4) !== `.map`
+                      )
                     }
-                    assets[chunkGroup.name] = files.filter(
-                      f => f.slice(-4) !== `.map`
-                    )
                   }
-                }
 
-                fs.writeFile(
-                  path.join(`public`, `webpack.stats.json`),
-                  JSON.stringify({
-                    assetsByChunkName: assets,
-                  }),
-                  done
-                )
-              })
+                  fs.writeFile(
+                    path.join(`public`, `webpack.stats.json`),
+                    JSON.stringify({
+                      assetsByChunkName: assets,
+                    }),
+                    done
+                  )
+                }
+              )
             },
           },
         ])
@@ -266,6 +257,7 @@ module.exports = async (
   }
 
   function getModule(config) {
+    const { schema } = store.getState()
     // Common config for every env.
     // prettier-ignore
     let configRules = [
@@ -278,6 +270,7 @@ module.exports = async (
     switch (stage) {
       case `develop`:
         configRules = configRules.concat([
+          rules.eslint(schema),
           {
             oneOf: [rules.cssModules(), rules.css()],
           },
@@ -346,6 +339,9 @@ module.exports = async (
         directoryPath(path.join(`src`, `node_modules`)),
         directoryPath(`node_modules`),
       ],
+      alias: {
+        gatsby$: directoryPath(path.join(`.cache`, `gatsby-browser-entry.js`)),
+      },
     }
   }
 

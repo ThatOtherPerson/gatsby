@@ -59,7 +59,7 @@ const _options = {
       h3: {
         ...scale(2 / 5),
         lineHeight: 1,
-        marginTop: rhythm(options.blockMarginBottom),
+        marginTop: rhythm(options.blockMarginBottom * 2),
         marginBottom: rhythm(options.blockMarginBottom / 2),
       },
       h4: {
@@ -78,7 +78,7 @@ const _options = {
       hr: {
         backgroundColor: colors.ui.light,
       },
-      "tt,code": {
+      "tt,code,kbd": {
         // background: `hsla(23, 60%, 97%, 1)`,
         background: colors.a[0],
         fontFamily: options.monospaceFontFamily.join(`,`),
@@ -213,12 +213,6 @@ const _options = {
         ".gatsby-highlight": {
           //boxShadow: `inset 0 1px 0 0 ${colors.a[1]}, inset 0 -1px 0 0 ${colors.a[1]}`,
           boxShadow: `inset 0 1px 0 0 #faede5, inset 0 -1px 0 0 #faede5`,
-        },
-      },
-      [`${presets.Tablet} and (max-width:980px)`]: {
-        ".has-sidebar .gatsby-highlight": {
-          marginLeft: 0,
-          marginRight: 0,
         },
       },
       video: {

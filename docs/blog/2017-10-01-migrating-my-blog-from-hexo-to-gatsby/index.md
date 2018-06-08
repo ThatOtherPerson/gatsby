@@ -4,6 +4,7 @@ date: "2017-10-01"
 image: "hexo-to-gatsby.png"
 author: "Ian Sinnott"
 excerpt: "How I migrated my blog to Gatsby and how you can do the same."
+tags: ["hexo", "getting-started", "markdown"]
 ---
 
 _This article was originally posted on
@@ -181,7 +182,7 @@ Let's fix that. We need to teach Gatsby how to query the file system. Luckily
 this is so common it's been done for you. Install the file system source plugin:
 
 ```
-yarn add gatsby-source-filesystem
+npm i --save gatsby-source-filesystem
 ```
 
 Now modify `gatsby-config.js` to both use the plugin and tell it what directory
@@ -230,7 +231,7 @@ files this is all you will need. But if you want to render markdown files as
 HTML you will need another plugin. Let's add that now:
 
 ```
-yarn add gatsby-transformer-remark
+npm i --save gatsby-transformer-remark
 ```
 
 As before, add it to the `plugins` field in `gatsby-config.js`:
@@ -293,16 +294,16 @@ specify a `pageQuery` that will pass data into the default export of that page.
 
 ```jsx
 // src/pages/index.js
-import React from "react";
+import React from "react"
 
 export default class BlogIndex extends React.Component {
   render() {
     // Handle graphql errors
     if (this.props.errors && this.props.errors.length) {
       this.props.errors.forEach(({ message }) => {
-        console.error(`BlogIndex render errr: ${message}`);
-      });
-      return <h1>Errors found: Check the console for details</h1>;
+        console.error(`BlogIndex render errr: ${message}`)
+      })
+      return <h1>Errors found: Check the console for details</h1>
     }
 
     return (
@@ -312,7 +313,7 @@ export default class BlogIndex extends React.Component {
           <a key={i}>{node.frontmatter.title}</a>
         ))}
       </div>
-    );
+    )
   }
 }
 
@@ -328,7 +329,7 @@ export const pageQuery = graphql`
       }
     }
   }
-`;
+`
 ```
 
 This is a simplified example, but there are a few things going on that might not
@@ -352,7 +353,7 @@ Now let's looks specifically at where we render a link for each blog post:
 {
   this.props.data.allMarkdownRemark.edges.map(({ node }, i) => (
     <a key={i}>{node.frontmatter.title}</a>
-  ));
+  ))
 }
 ```
 
@@ -376,7 +377,7 @@ export const pageQuery = graphql`
       }
     }
   }
-`;
+`
 ```
 
 This is how you get data from Gatsby into your react components. Make sure you
@@ -441,7 +442,7 @@ export const pageQuery = graphql`
       }
     }
   }
-`;
+`
 ```
 
 ```jsx
@@ -450,7 +451,7 @@ export const pageQuery = graphql`
     <Link to={node.frontmatter.url} key={i}>
       {node.frontmatter.title}
     </Link>
-  ));
+  ))
 }
 ```
 
@@ -495,15 +496,15 @@ we add custom fields. Example:
 
 ```js
 // gatsby-node.js
-const { GraphQLString } = require("graphql");
+const { GraphQLString } = require("graphql")
 
 const getURL = node => {
   /* See the source link below for implementation */
-};
+}
 
 exports.setFieldsOnGraphQLNodeType = ({ type }) => {
   if (type.name !== "MarkdownRemark") {
-    return {};
+    return {}
   }
 
   return Promise.resolve({
@@ -511,8 +512,8 @@ exports.setFieldsOnGraphQLNodeType = ({ type }) => {
       type: GraphQLString,
       resolve: node => getURL(node),
     },
-  });
-};
+  })
+}
 ```
 
 > Source code for
@@ -564,16 +565,16 @@ case, `createPages`. In the same `gatsby-node.js` file as before:
 // .. other stuff from before...
 
 exports.createPages = ({ boundActionCreators }) => {
-  const { createPage } = boundActionCreators;
-  const postTemplate = path.resolve("./src/templates/custom-page.js");
+  const { createPage } = boundActionCreators
+  const postTemplate = path.resolve("./src/templates/custom-page.js")
 
   // Create a custom page!
   createPage({
     path: `/my-custom-page/`,
     component: postTemplate,
     context: {}, // Context will be passed in to the page query as graphql variables
-  });
-};
+  })
+}
 ```
 
 At the most basic level this method of page creation is quite simple: Grab the
@@ -600,8 +601,8 @@ markdownFiles.forEach(post => {
     context: {
       id: post.id,
     },
-  });
-});
+  })
+})
 ```
 
 I've included the pseudo code to highlight the fact that nothing too magical is
@@ -618,8 +619,8 @@ work.
 // NOTE: I'm using async/await to simplify the code since it's now natively supported
 // in Node 8.x. This means that our function will return a promise
 exports.createPages = async ({ graphql, boundActionCreators }) => {
-  const { createPage } = boundActionCreators;
-  const postTemplate = path.resolve("./src/templates/post.js");
+  const { createPage } = boundActionCreators
+  const postTemplate = path.resolve("./src/templates/post.js")
 
   // Using async await. Query will likely be very similar to your pageQuery in index.js
   const result = await graphql(`
@@ -633,11 +634,11 @@ exports.createPages = async ({ graphql, boundActionCreators }) => {
         }
       }
     }
-  `);
+  `)
 
   if (result.errors) {
-    console.log(result.errors);
-    throw new Error("Things broke, see console output above");
+    console.log(result.errors)
+    throw new Error("Things broke, see console output above")
   }
 
   // Create blog posts pages.
@@ -649,9 +650,9 @@ exports.createPages = async ({ graphql, boundActionCreators }) => {
         // Context will be passed in to the page query as graphql vars
         id: node.id,
       },
-    });
-  });
-};
+    })
+  })
+}
 ```
 
 Notice that the query is very similar to the `pageQuery` in index.js but it's
@@ -671,11 +672,11 @@ Here it is in all it's glory:
 
 ```jsx
 // src/templates/post.js
-import React from "react";
+import React from "react"
 
 export default class BlogPost extends React.Component {
   render() {
-    const post = this.props.data.markdownRemark;
+    const post = this.props.data.markdownRemark
 
     return (
       <div className="Post">
@@ -685,7 +686,7 @@ export default class BlogPost extends React.Component {
           className="content"
         />
       </div>
-    );
+    )
   }
 }
 
@@ -699,7 +700,7 @@ export const pageQuery = graphql`
       html
     }
   }
-`;
+`
 ```
 
 If you're not used to GraphQL syntax the `pageQuery` might be a little

@@ -22,6 +22,9 @@ const formatWebpackMessages = require(`react-dev-utils/formatWebpackMessages`)
 const chalk = require(`chalk`)
 const address = require(`address`)
 const sourceNodes = require(`../utils/source-nodes`)
+const websocketManager = require(`../utils/websocket-manager`)
+const getSslCert = require(`../utils/get-ssl-cert`)
+const slash = require(`slash`)
 
 // const isInteractive = process.stdout.isTTY
 
@@ -137,6 +140,13 @@ async function startServer(program) {
     })
   )
 
+  // Expose access to app for advanced use cases
+  const { developMiddleware } = store.getState().config
+
+  if (developMiddleware) {
+    developMiddleware(app)
+  }
+
   // Set up API proxy.
   const { proxy } = store.getState().config
   if (proxy) {
@@ -195,13 +205,14 @@ async function startServer(program) {
   /**
    * Set up the HTTP server and socket.io.
    **/
+  let server = require(`http`).Server(app)
 
-  const server = require(`http`).Server(app)
-  const io = require(`socket.io`)(server)
-
-  io.on(`connection`, socket => {
-    socket.join(`clients`)
-  })
+  // If a SSL cert exists in program, use it with `createServer`.
+  if (program.ssl) {
+    server = require(`https`).createServer(program.ssl, app)
+  }
+  websocketManager.init({ server, directory: program.directory })
+  const socket = websocketManager.getSocket()
 
   const listener = server.listen(program.port, program.host, err => {
     if (err) {
@@ -221,12 +232,12 @@ async function startServer(program) {
 
   // Register watcher that rebuilds index.html every time html.js changes.
   const watchGlobs = [`src/html.js`, `plugins/**/gatsby-ssr.js`].map(path =>
-    directoryPath(path)
+    slash(directoryPath(path))
   )
 
   chokidar.watch(watchGlobs).on(`change`, async () => {
     await createIndexHtml()
-    io.to(`clients`).emit(`reload`)
+    socket.to(`clients`).emit(`reload`)
   })
 
   return [compiler, listener]
@@ -235,7 +246,28 @@ async function startServer(program) {
 module.exports = async (program: any) => {
   const detect = require(`detect-port`)
   const port =
-    typeof program.port === `string` ? parseInt(program.port, 10) : program.port
+    typeof program.port === `string`
+      ? parseInt(program.port, 10)
+      : program.port
+
+  // In order to enable custom ssl, --cert-file --key-file and -https flags must all be
+  // used together
+  if ((program[`cert-file`] || program[`key-file`]) && !program.https) {
+    report.panic(
+      `for custom ssl --https, --cert-file, and --key-file must be used together`
+    )
+  }
+
+  // Check if https is enabled, then create or get SSL cert.
+  // Certs are named after `name` inside the project's package.json.
+  if (program.https) {
+    program.ssl = await getSslCert({
+      name: program.sitePackageJson.name,
+      certFile: program[`cert-file`],
+      keyFile: program[`key-file`],
+      directory: program.directory,
+    })
+  }
 
   let compiler
   await new Promise(resolve => {
@@ -354,10 +386,14 @@ module.exports = async (program: any) => {
 
   function printDeprecationWarnings() {
     const deprecatedApis = [`boundActionCreators`, `pathContext`]
+    const fixMap = {
+      boundActionCreators: `actions`,
+      pathContext: `pageContext`,
+    }
     const deprecatedLocations = {}
     deprecatedApis.forEach(api => (deprecatedLocations[api] = []))
 
-    glob.sync(`{,!(node_modules|public)/**/}*.js`).forEach(file => {
+    glob.sync(`{,!(node_modules|public)/**/}*.js`, { nodir: true }).forEach(file => {
       const fileText = fs.readFileSync(file)
       const matchingApis = deprecatedApis.filter(
         api => fileText.indexOf(api) !== -1
@@ -368,9 +404,11 @@ module.exports = async (program: any) => {
     deprecatedApis.forEach(api => {
       if (deprecatedLocations[api].length) {
         console.log(
-          `${chalk.cyan(api)} ${chalk.yellow(
-            `is deprecated but was found in the following files:`
-          )}`
+          `%s %s %s %s`,
+          chalk.cyan(api),
+          chalk.yellow(`is deprecated. Use`),
+          chalk.cyan(fixMap[api]),
+          chalk.yellow(`instead. Check the following files:`)
         )
         console.log()
         deprecatedLocations[api].forEach(file => console.log(file))
@@ -382,12 +420,16 @@ module.exports = async (program: any) => {
   let isFirstCompile = true
   // "done" event fires when Webpack has finished recompiling the bundle.
   // Whether or not you have warnings or errors, you will get this event.
-  compiler.plugin(`done`, stats => {
+  compiler.hooks.done.tapAsync(`print getsby instructions`, (stats, done) => {
     // We have switched off the default Webpack output in WebpackDevServer
     // options so we are going to "massage" the warnings and errors and present
     // them in a readable focused way.
     const messages = formatWebpackMessages(stats.toJson({}, true))
-    const urls = prepareUrls(`http`, program.host, program.port)
+    const urls = prepareUrls(
+      program.ssl ? `https` : `http`,
+      program.host,
+      program.port
+    )
     const isSuccessful = !messages.errors.length && !messages.warnings.length
     // if (isSuccessful) {
     // console.log(chalk.green(`Compiled successfully!`))
@@ -432,5 +474,7 @@ module.exports = async (program: any) => {
     // " to the line before.\n"
     // )
     // }
+
+    done()
   })
 }

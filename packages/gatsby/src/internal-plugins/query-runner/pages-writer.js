@@ -1,81 +1,79 @@
 const _ = require(`lodash`)
 const fs = require(`fs-extra`)
+const crypto = require(`crypto`)
 
 const { store, emitter } = require(`../../redux/`)
-import { generatePathChunkName } from "../../utils/js-chunk-names"
 
 import { joinPath } from "../../utils/path"
 
-const getLayoutById = layouts => id => layouts.find(l => l.id === id)
+let lastHash = null
 
 // Write out pages information.
 const writePages = async () => {
   bootstrapFinished = true
-  let { program, pages, layouts } = store.getState()
+  let { program, jsonDataPaths, pages } = store.getState()
+
+  const pagesComponentDependencies = {}
+
   // Write out pages.json
-  const pagesData = pages.reduce(
-    (mem, { path, matchPath, componentChunkName, layout, jsonName }) => {
-      const layoutOjb = getLayoutById(layouts)(layout)
+  const pagesData = _.sortBy(
+    pages.reduce((mem, { path, matchPath, componentChunkName, jsonName }) => {
+      const pageComponentsChunkNames = {
+        componentChunkName,
+      }
+
+      if (program._[0] === `develop`) {
+        pagesComponentDependencies[path] = pageComponentsChunkNames
+      }
+
       return [
         ...mem,
         {
-          componentChunkName,
-          layout: layoutOjb ? layoutOjb.machineId : layout,
-          layoutComponentChunkName: layoutOjb && layoutOjb.componentChunkName,
+          ...pageComponentsChunkNames,
           jsonName,
           path,
           matchPath,
         },
       ]
-    },
-    []
+    }, []),
+    // Sort pages with matchPath to end so explicit routes
+    // will match before general.
+    p => (p.matchPath ? 1 : 0)
   )
 
-  // Get list of components, layouts, and json files.
+  const newHash = crypto
+    .createHash(`md5`)
+    .update(JSON.stringify(pagesComponentDependencies))
+    .digest(`hex`)
+
+  if (newHash === lastHash) {
+    // components didn't change - no need to rewrite pages.json
+    return Promise.resolve()
+  }
+
+  lastHash = newHash
+
+  // Get list of components, and json files.
   let components = []
   let json = []
-  let pageLayouts = []
 
   pages.forEach(p => {
     components.push({
       componentChunkName: p.componentChunkName,
       component: p.component,
     })
-    if (p.layout) {
-      let layout = getLayoutById(layouts)(p.layout)
 
-      if (!layout) {
-        throw new Error(
-          `Could not find layout '${
-            p.layout
-          }'. Check if this file exists in 'src/layouts'.`
-        )
-      }
-
-      pageLayouts.push(layout)
-      json.push({
-        jsonName: layout.jsonName,
-      })
+    if (p.jsonName && jsonDataPaths[p.jsonName]) {
+      json.push({ jsonName: p.jsonName, dataPath: jsonDataPaths[p.jsonName] })
     }
-    json.push({ path: p.path, jsonName: p.jsonName })
   })
 
-  pageLayouts = _.uniq(pageLayouts)
   components = _.uniqBy(components, c => c.componentChunkName)
 
-  // Create file with sync requires of layouts/components/json files.
+  // Create file with sync requires of components/json files.
   let syncRequires = `// prefer default export if available
 const preferDefault = m => m && m.default || m
 \n\n`
-  syncRequires += `exports.layouts = {\n${pageLayouts
-    .map(
-      l =>
-        `  "${l.machineId}": preferDefault(require("${
-          l.componentWrapperPath
-        }"))`
-    )
-    .join(`,\n`)}
-}\n\n`
   syncRequires += `exports.components = {\n${components
     .map(
       c =>
@@ -85,19 +83,8 @@ const preferDefault = m => m && m.default || m
     )
     .join(`,\n`)}
 }\n\n`
-  syncRequires += `exports.json = {\n${json
-    .map(
-      j =>
-        `  "${j.jsonName}": require("${joinPath(
-          program.directory,
-          `/.cache/json/`,
-          j.jsonName
-        )}")`
-    )
-    .join(`,\n`)}
-}`
 
-  // Create file with async requires of layouts/components/json files.
+  // Create file with async requires of components/json files.
   let asyncRequires = `// prefer default export if available
 const preferDefault = m => m && m.default || m
 \n`
@@ -110,26 +97,12 @@ const preferDefault = m => m && m.default || m
     )
     .join(`,\n`)}
 }\n\n`
-  asyncRequires += `exports.json = {\n${json
-    .map(
-      j =>
-        `  "${j.jsonName}": () => import("${joinPath(
-          program.directory,
-          `/.cache/json/`,
-          j.jsonName
-        )}" /* webpackChunkName: "${generatePathChunkName(j.path)}" */ )`
-    )
-    .join(`,\n`)}
-}\n\n`
-  asyncRequires += `exports.layouts = {\n${pageLayouts
-    .map(
-      l =>
-        `  "${l.machineId}": () => import("${
-          l.componentWrapperPath
-        }" /* webpackChunkName: "${l.componentChunkName}" */)`
-    )
-    .join(`,\n`)}
-}`
+
+  asyncRequires += `exports.data = () => import("${joinPath(
+    program.directory,
+    `.cache`,
+    `data.json`
+  )}")\n\n`
 
   const writeAndMove = (file, data) => {
     const destination = joinPath(program.directory, `.cache`, file)
@@ -143,6 +116,13 @@ const preferDefault = m => m && m.default || m
     writeAndMove(`pages.json`, JSON.stringify(pagesData, null, 4)),
     writeAndMove(`sync-requires.js`, syncRequires),
     writeAndMove(`async-requires.js`, asyncRequires),
+    writeAndMove(
+      `data.json`,
+      JSON.stringify({
+        pages: pagesData,
+        dataPaths: jsonDataPaths,
+      })
+    ),
   ])
 }
 

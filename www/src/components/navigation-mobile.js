@@ -3,9 +3,9 @@ import { Link } from "gatsby"
 
 import {
   BlogIcon,
-  CommunityIcon,
   DocsIcon,
   TutorialIcon,
+  PluginsIcon,
 } from "../assets/mobile-nav-icons"
 import presets, { colors } from "../utils/presets"
 import typography, { rhythm, scale, options } from "../utils/typography"
@@ -25,12 +25,12 @@ const MobileNavItem = ({ linkTo, label, icon }) => (
       textAlign: `center`,
     }}
   >
-    <img src={icon} css={{ height: 32, display: `block`, margin: `0 auto` }} />
+    <img src={icon} css={{ height: 32, display: `block`, margin: `0 auto` }} alt={`${label} Icon`} />
     <div>{label}</div>
   </Link>
 )
 
-export default () => (
+const MobileNavigation = () => (
   <div
     css={{
       position: `fixed`,
@@ -44,6 +44,7 @@ export default () => (
       borderTop: `1px solid ${colors.ui.light}`,
       background: colors.ui.whisper,
       fontFamily: typography.options.headerFontFamily.join(`,`),
+      paddingBottom: `env(safe-area-inset-bottom)`,
       [presets.Tablet]: {
         display: `none`,
       },
@@ -51,11 +52,9 @@ export default () => (
   >
     <MobileNavItem linkTo="/docs/" label="Docs" icon={DocsIcon} />
     <MobileNavItem linkTo="/tutorial/" label="Tutorial" icon={TutorialIcon} />
-    <MobileNavItem
-      linkTo="/community/"
-      label="Community"
-      icon={CommunityIcon}
-    />
+    <MobileNavItem linkTo="/plugins/" label="Plugins" icon={PluginsIcon} />
     <MobileNavItem linkTo="/blog/" label="Blog" icon={BlogIcon} />
   </div>
 )
+
+export default MobileNavigation

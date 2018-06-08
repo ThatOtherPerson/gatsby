@@ -4,7 +4,7 @@ Provides drop-in support for SASS/SCSS stylesheets
 
 ## Install
 
-`yarn add gatsby-plugin-sass`
+`npm install --save node-sass gatsby-plugin-sass`
 
 ## How to use
 
@@ -13,7 +13,7 @@ Provides drop-in support for SASS/SCSS stylesheets
 
 ```javascript
 // in gatsby-config.js
-plugins: [`gatsby-plugin-sass`];
+plugins: [`gatsby-plugin-sass`]
 ```
 
 If you need to pass options to Sass use the plugins options, see [node-sass](https://github.com/sass/node-sass)
@@ -28,7 +28,7 @@ plugins: [
       includePaths: ["absolute/path/a", "absolute/path/b"],
     },
   },
-];
+]
 ```
 
 ### With CSS Modules
@@ -57,5 +57,17 @@ plugins: [
       precision: 8,
     },
   },
-];
+]
 ```
+
+
+## Breaking changes history
+
+<!-- Please keep the breaking changes list ordered with the newest change at the top -->
+
+### v2.0.0
+
+- `node-sass` is moved to a peer dependency. Installing the package
+alongside `gatsby-plugin-sass` is now required. Use `npm install --save node-sass`
+
+- support Gatsby v2 only

@@ -61,18 +61,18 @@ module.exports = async (args: BootstrapArgs) => {
   let activity = report.activityTimer(`delete html files from previous builds`)
   activity.start()
   await del([
-    `public/*.{html}`,
-    `public/**/*.{html}`,
+    `public/*.htm}`,
+    `public/**/*.html`,
     `!public/static`,
-    `!public/static/**/*.{html}`,
+    `!public/static/**/*.html`,
   ])
   activity.end()
 
   // Try opening the site's gatsby-config.js file.
-  activity = report.activityTimer(`open and validate gatsby-config.js`)
+  activity = report.activityTimer(`open and validate gatsby-config`)
   activity.start()
   const config = await preferDefault(
-    getConfigFile(program.directory, `gatsby-config.js`)
+    getConfigFile(program.directory, `gatsby-config`)
   )
 
   if (config && config.polyfill) {
@@ -152,7 +152,7 @@ module.exports = async (args: BootstrapArgs) => {
   initCache()
 
   // Ensure the public/static directory is created.
-  await fs.ensureDirSync(`${program.directory}/public/static`)
+  await fs.ensureDirSync(`${program.directory}/public/static/d`)
 
   // Copy our site files to the root of the site.
   activity = report.activityTimer(`copy gatsby files`)
@@ -166,7 +166,6 @@ module.exports = async (args: BootstrapArgs) => {
       clobber: true,
     })
     await fs.ensureDirSync(`${program.directory}/.cache/json`)
-    await fs.ensureDirSync(`${program.directory}/.cache/layouts`)
 
     // Ensure .cache/fragments exists and is empty. We want fragments to be
     // added on every run in response to data as fragments can only be added if
@@ -185,7 +184,7 @@ module.exports = async (args: BootstrapArgs) => {
 
     const envAPIs = plugin[`${env}APIs`]
     if (envAPIs && Array.isArray(envAPIs) && envAPIs.length > 0) {
-      return slash(path.join(plugin.resolve, `gatsby-${env}.js`))
+      return slash(path.join(plugin.resolve, `gatsby-${env}`))
     }
     return undefined
   }
@@ -209,17 +208,6 @@ module.exports = async (args: BootstrapArgs) => {
     plugin => plugin.resolve
   )
 
-  let browserAPIRunner = ``
-
-  try {
-    browserAPIRunner = fs.readFileSync(
-      `${siteDir}/api-runner-browser.js`,
-      `utf-8`
-    )
-  } catch (err) {
-    report.panic(`Failed to read ${siteDir}/api-runner-browser.js`, err)
-  }
-
   const browserPluginsRequires = browserPlugins
     .map(
       plugin =>
@@ -230,7 +218,7 @@ module.exports = async (args: BootstrapArgs) => {
     )
     .join(`,`)
 
-  browserAPIRunner = `var plugins = [${browserPluginsRequires}]\n${browserAPIRunner}`
+  const browserAPIRunner = `module.exports = [${browserPluginsRequires}]\n`
 
   let sSRAPIRunner = ``
 
@@ -252,7 +240,7 @@ module.exports = async (args: BootstrapArgs) => {
   sSRAPIRunner = `var plugins = [${ssrPluginsRequires}]\n${sSRAPIRunner}`
 
   fs.writeFileSync(
-    `${siteDir}/api-runner-browser.js`,
+    `${siteDir}/api-runner-browser-plugins.js`,
     browserAPIRunner,
     `utf-8`
   )
@@ -299,16 +287,6 @@ module.exports = async (args: BootstrapArgs) => {
     return graphql(schema, query, context, context, context)
   }
 
-  // Collect layouts.
-  activity = report.activityTimer(`createLayouts`)
-  activity.start()
-  await apiRunnerNode(`createLayouts`, {
-    graphql: graphqlRunner,
-    traceId: `initial-createLayouts`,
-    waitForCascadingActions: true,
-  })
-  activity.end()
-
   // Collect pages.
   activity = report.activityTimer(`createPages`)
   activity.start()
@@ -342,6 +320,8 @@ module.exports = async (args: BootstrapArgs) => {
   activity.start()
   await require(`../schema`)()
   activity.end()
+
+  require(`../schema/type-conflict-reporter`).printConflicts()
 
   // Extract queries
   activity = report.activityTimer(`extract queries from components`)
@@ -403,6 +383,7 @@ module.exports = async (args: BootstrapArgs) => {
     report.log(``)
     report.info(`bootstrap finished - ${process.uptime()} s`)
     report.log(``)
+    emitter.emit(`BOOTSTRAP_FINISHED`)
     return { graphqlRunner }
   } else {
     return new Promise(resolve => {

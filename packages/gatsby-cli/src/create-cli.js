@@ -4,7 +4,7 @@ const yargs = require(`yargs`)
 const report = require(`./reporter`)
 const fs = require(`fs`)
 
-const DEFAULT_BROWSERS = [`> 1%`, `last 2 versions`, `IE >= 9`]
+const DEFAULT_BROWSERS = [`>0.25%`, `not dead`]
 
 const handlerP = fn => (...args) => {
   Promise.resolve(fn(...args)).then(
@@ -98,6 +98,23 @@ function buildLocalCommands(cli, isLocalSite) {
           alias: `open`,
           type: `boolean`,
           describe: `Open the site in your browser for you.`,
+        })
+        .option(`S`, {
+          alias: `https`,
+          type: `boolean`,
+          describe: `Use HTTPS. See https://www.gatsbyjs.org/docs/local-https/ as a guide`,
+        })
+        .option(`c`, {
+          alias: `cert-file`,
+          type: `string`,
+          default: ``,
+          describe: `Custom HTTPS cert file (relative path; also required: --https, --key-file). See https://www.gatsbyjs.org/docs/local-https/`,
+        })
+        .option(`k`, {
+          alias: `key-file`,
+          type: `string`,
+          default: ``,
+          describe: `Custom HTTPS key file (relative path; also required: --https, --cert-file). See https://www.gatsbyjs.org/docs/local-https/`,
         }),
     handler: handlerP(
       getCommandHandler(`develop`, (args, cmd) => {
@@ -119,6 +136,10 @@ function buildLocalCommands(cli, isLocalSite) {
         type: `boolean`,
         default: false,
         describe: `Build site with link paths prefixed (set prefix in your config).`,
+      }).option(`no-uglify`, {
+        type: `boolean`,
+        default: false,
+        describe: `Build site without uglifying JS bundles (for debugging).`,
       }),
     handler: handlerP(
       getCommandHandler(`build`, (args, cmd) => {
@@ -175,9 +196,7 @@ module.exports = (argv, handlers) => {
 
   cli
     .usage(`Usage: $0 <command> [options]`)
-    .help(`h`)
     .alias(`h`, `help`)
-    .version()
     .alias(`v`, `version`)
     .option(`verbose`, {
       default: false,

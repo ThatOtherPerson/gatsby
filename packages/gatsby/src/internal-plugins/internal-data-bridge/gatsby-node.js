@@ -156,6 +156,10 @@ exports.onCreatePage = ({ page, actions }) => {
         .createHash(`md5`)
         .update(JSON.stringify(page))
         .digest(`hex`),
+      description:
+        page.pluginCreatorId === `Plugin default-site-plugin`
+          ? `Your site's "gatsby-node.js"`
+          : page.pluginCreatorId,
     },
   })
 }
@@ -164,5 +168,5 @@ exports.onCreatePage = ({ page, actions }) => {
 emitter.on(`DELETE_PAGE`, action => {
   const nodeId = createPageId(action.payload.path)
   const node = getNode(nodeId)
-  boundActionCreators.deleteNode(nodeId, node)
+  boundActionCreators.deleteNode({ node })
 })

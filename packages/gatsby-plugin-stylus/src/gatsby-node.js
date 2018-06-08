@@ -1,4 +1,3 @@
-const MiniCssExtractPlugin = require(`mini-css-extract-plugin`)
 /**
  * Usage:
  *
@@ -20,6 +19,9 @@ const MiniCssExtractPlugin = require(`mini-css-extract-plugin`)
  *   },
  * ],
  */
+
+const resolve = require(`./resolve`)
+
 exports.onCreateWebpackConfig = (
   { actions, stage, rules, plugins, loaders },
   { postCssPlugins, ...stylusOptions }
@@ -28,7 +30,7 @@ exports.onCreateWebpackConfig = (
   const PRODUCTION = stage !== `develop`
 
   const stylusLoader = {
-    loader: require.resolve(`stylus-loader`),
+    loader: resolve(`stylus-loader`),
     options: {
       sourceMap: !PRODUCTION,
       ...stylusOptions,
@@ -39,7 +41,7 @@ exports.onCreateWebpackConfig = (
     test: /\.styl$/,
     exclude: /\.module\.styl$/,
     use: [
-      MiniCssExtractPlugin.loader,
+      loaders.miniCssExtract(),
       loaders.css({ importLoaders: 1 }),
       loaders.postcss({ plugins: postCssPlugins }),
       stylusLoader,
@@ -49,7 +51,7 @@ exports.onCreateWebpackConfig = (
   const stylusRuleModules = {
     test: /\.module\.styl$/,
     use: [
-      MiniCssExtractPlugin.loader,
+      loaders.miniCssExtract(),
       loaders.css({ modules: true, importLoaders: 1 }),
       loaders.postcss({ plugins: postCssPlugins }),
       stylusLoader,

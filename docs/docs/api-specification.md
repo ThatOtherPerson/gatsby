@@ -1,5 +1,5 @@
 ---
-title: API specification
+title: API Specification
 ---
 
 Gatsby's APIs are tailored conceptually to some extent after React.js to improve
@@ -27,10 +27,10 @@ Plugins can extend Gatsby in many ways:
 A single plugin can use multiple APIs to accomplish its purpose. E.g. the plugin
 for the css-in-js library [Glamor](/packages/gatsby-plugin-glamor/):
 
-1. modifies the webpack config to add its plugin
-2. adds a Babel plugin to replace React's default createElement
-3. modifies server rendering to extract out the critical CSS for each rendered
-   page and inline the CSS in the `<head>` of that HTML page.
+1.  modifies the webpack config to add its plugin
+2.  adds a Babel plugin to replace React's default createElement
+3.  modifies server rendering to extract out the critical CSS for each rendered
+    page and inline the CSS in the `<head>` of that HTML page.
 
 Plugins can also depend on other plugins. [The Sharp
 plugin](/packages/gatsby-plugin-sharp/) exposes a number of high-level APIs for
@@ -56,9 +56,9 @@ See
 ## Concepts
 
 * _Page_ — a site page with a pathname, a template component, and optional
-  graphql query and layout component
+  graphql query.
 * _Page Component_ — React.js component that renders a page and can optionally
-  specify a layout component and a graphql query
+  specify a graphql query
 * _Component extensions_ — extensions that are resolvable as components. `.js`
   and `.jsx` are supported by core. But plugins can add support for other
   compile-to-js languages.

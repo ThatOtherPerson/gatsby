@@ -12,7 +12,24 @@ Provide drop-in support for using the css-in-js library
 Add the plugin to your `gatsby-config.js`.
 
 ```javascript
-plugins: [`gatsby-plugin-jss`];
+plugins: [`gatsby-plugin-jss`]
+```
+
+Or with theme
+
+```javascript
+const theme = {
+  fontSize: 16,
+  fontFamily: "Roboto",
+  color: "#212121",
+}
+
+plugins: [
+  {
+    resolve: "jss",
+    options: { theme },
+  },
+]
 ```
 
 ## Example

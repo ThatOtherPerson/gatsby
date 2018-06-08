@@ -2,7 +2,7 @@
 
 Source plugin for pulling data into [Gatsby](https://github.com/gatsbyjs) from
 WordPress sites using the
-[WordPress JSON REST API](https://developer.wordpress.org/rest-api/reference/).
+[WordPress REST API](https://developer.wordpress.org/rest-api/reference/).
 
 An example site for this plugin is available.
 
@@ -42,24 +42,24 @@ We welcome PRs adding support for data from other plugins.
 // In your gatsby-config.js
 plugins: [
   /*
-     * Gatsby's data processing layer begins with “source”
-     * plugins. Here the site sources its data from Wordpress.
-     */
+   * Gatsby's data processing layer begins with “source”
+   * plugins. Here the site sources its data from Wordpress.
+   */
   {
     resolve: "gatsby-source-wordpress",
     options: {
       /*
-        * The base URL of the Wordpress site without the trailingslash and the protocol. This is required.
-        * Example : 'gatsbyjsexamplewordpress.wordpress.com' or 'www.example-site.com'
-        */
+       * The base URL of the Wordpress site without the trailingslash and the protocol. This is required.
+       * Example : 'gatsbyjsexamplewordpress.wordpress.com' or 'www.example-site.com'
+       */
       baseUrl: "gatsbyjsexamplewordpress.wordpress.com",
       // The protocol. This can be http or https.
       protocol: "http",
       // Indicates whether the site is hosted on wordpress.com.
-      // If false, then the asumption is made that the site is self hosted.
+      // If false, then the assumption is made that the site is self hosted.
       // If true, then the plugin will source its content on wordpress.com using the JSON REST API V2.
       // If your site is hosted on wordpress.org, then set this to false.
-      hostingWPCOM: true,
+      hostingWPCOM: false,
       // If useACF is true, then the source plugin will try to import the Wordpress ACF Plugin contents.
       // This feature is untested for sites hosted on Wordpress.com.
       // Defaults to true.
@@ -81,16 +81,25 @@ plugins: [
         wpcom_pass: "very-secured-password",
       },
       // Set verboseOutput to true to display a verbose output on `npm run develop` or `npm run build`
-      // It can help you debug specific API Endpoints problems
+      // It can help you debug specific API Endpoints problems.
       verboseOutput: false,
-      // Search and Replace Urls across WordPress content
+      // Set how many pages are retrieved per API request.
+      perPage: 100,
+      // Search and Replace Urls across WordPress content.
       searchAndReplaceContentUrls: {
         sourceUrl: "https://source-url.com",
         replacementUrl: "https://replacement-url.com",
       },
+      // Set how many simultaneous requests are sent at once.
+      concurrentRequests: 10,
+      // Exclude specific routes using glob parameters
+      // See: https://github.com/isaacs/minimatch
+      // Example:  `["/*/*/comments", "/yoast/**"]` will exclude routes ending in `comments` and
+      // all routes that begin with `yoast` from fetch.
+      excludedRoutes: ["/*/*/comments", "/yoast/**"],
     },
   },
-];
+]
 ```
 
 ## WordPress Plugins
@@ -98,7 +107,7 @@ plugins: [
 These plugins were tested. We welcome PRs adding support for data from other
 plugins.
 
-* [x] Custom Post Types : it will work seemlessly, no further option needs to be
+* [x] Custom Post Types : it will work seamlessly, no further option needs to be
       activated. ("Show in REST API" setting needs to be set to true on the
       custom post in the plugin settings for this to work. It's set to "false"
       by default.)
@@ -129,11 +138,17 @@ plugins.
 
 Set `hostingWPCOM: true`.
 
-You will need to provide an (API
-Key)[https://en.support.wordpress.com/api-keys/].
+You will need to provide an [API
+Key](https://en.support.wordpress.com/api-keys/).
 
 Note : you don't need this for Wordpress.org hosting in which your WordPress
 will behave like a self-hosted instance.
+
+## Test your WordPress API
+
+Before you run your first query, ensure the WordPress JSON API is working correctly by visiting /wp-json at your WordPress install. The result should be similar to the [WordPress demo API](https://demo.wp-api.org/wp-json/).
+
+If you see a page on your site, rather than the JSON output, check if your permalink settings are set to “Plain”. After changing this to any of the other settings, the JSON API should be accessible.
 
 ## How to query
 
@@ -145,6 +160,7 @@ GraphQL model.
 ### Query posts
 
 ```graphql
+{
   allWordpressPost {
     edges {
       node {
@@ -158,11 +174,13 @@ GraphQL model.
       }
     }
   }
+}
 ```
 
 ### Query pages
 
 ```graphql
+{
   allWordpressPage {
     edges {
       node {
@@ -177,6 +195,7 @@ GraphQL model.
       }
     }
   }
+}
 ```
 
 Same thing for other type of entity (tag, media, categories, ...).
@@ -204,6 +223,7 @@ For example the following URL:
 * Final GraphQL Type : AllWordpressWpApiMenusMenuLocations
 
 ```graphql
+{
   allWordpress${Manufacturer}${Endpoint} {
     edges {
       node {
@@ -213,6 +233,7 @@ For example the following URL:
       }
     }
   }
+}
 ```
 
 ### Query posts with the child ACF Fields Node
@@ -220,6 +241,7 @@ For example the following URL:
 Mention the apparition of `childWordpressAcfField` in the query below :
 
 ```graphql
+{
   allWordpressPost {
     edges {
       node {
@@ -241,6 +263,7 @@ Mention the apparition of `childWordpressAcfField` in the query below :
       }
     }
   }
+}
 ```
 
 ### Query pages with the child ACF Fields Node
@@ -248,6 +271,7 @@ Mention the apparition of `childWordpressAcfField` in the query below :
 Mention the apparition of `childWordpressAcfField` in the query below :
 
 ```graphql
+{
   allWordpressPage {
     edges {
       node {
@@ -267,6 +291,7 @@ Mention the apparition of `childWordpressAcfField` in the query below :
       }
     }
   }
+}
 ```
 
 ### Query with ACF Flexible Content
@@ -284,6 +309,7 @@ require you to know types of nodes. The easiest way to get the types of nodes is
 `___GraphiQL` debugger and run the below query (adjust post type and field name):
 
 ```graphQL
+{
   allWordpressPage {
     edges {
       node {
@@ -296,6 +322,7 @@ require you to know types of nodes. The easiest way to get the types of nodes is
       }
     }
   }
+}
 ```
 
 When you have node type names, you can use them to create inline fragments.
@@ -303,6 +330,7 @@ When you have node type names, you can use them to create inline fragments.
 Full example:
 
 ```graphQL
+{
   allWordpressPage {
     edges {
       node {
@@ -321,8 +349,8 @@ Full example:
               image {
                 localFile {
                   childImageSharp {
-                    sizes(maxWidth: 800) {
-                      ...GatsbyImageSharpSizes_withWebp
+                    fluid(maxWidth: 800) {
+                      ...GatsbyImageSharpFluid_withWebp
                     }
                   }
                 }
@@ -333,11 +361,13 @@ Full example:
       }
     }
   }
+}
 ```
 
 ### Query posts with the WPML Fields Node
 
 ```graphql
+{
   allWordpressPost {
     edges {
       node {
@@ -363,11 +393,13 @@ Full example:
       }
     }
   }
+}
 ```
 
 ### Query pages with the WPML Fields Node
 
 ```graphql
+{
   allWordpressPage {
     edges {
       node {
@@ -391,12 +423,13 @@ Full example:
       }
     }
   }
+}
 ```
 
 ### Image processing
 
-To use image processing you need `gatsby-transformer-sharp` and
-`gatsby-plugin-sharp` in your `gatsby-config.js`.
+To use image processing you need `gatsby-transformer-sharp`, `gatsby-plugin-sharp` and their
+dependencies `gatsby-image` and `gatsby-source-filesystem` in your `gatsby-config.js`.
 
 You can apply image processing to:
 
@@ -411,10 +444,12 @@ currently not supported.
 To access image processing in your queries you need to use this pattern:
 
 ```
-imageFieldName {
-  localFile {
-    childImageSharp {
-      ...
+{
+  imageFieldName {
+    localFile {
+      childImageSharp {
+        ...ImageFragment
+      }
     }
   }
 }
@@ -423,6 +458,7 @@ imageFieldName {
 Full example:
 
 ```graphql
+{
   allWordpressPost {
     edges {
       node {
@@ -430,8 +466,8 @@ Full example:
         featured_media {
           localFile {
             childImageSharp {
-              resolutions(width: 500, height: 300) {
-                ...GatsbyImageSharpResolutions_withWebp
+              fixed(width: 500, height: 300) {
+                ...GatsbyImageSharpFixed_withWebp
               }
             }
           }
@@ -440,8 +476,8 @@ Full example:
           image {
             localFile {
               childImageSharp {
-                sizes(maxWidth: 500) {
-                  ...GatsbyImageSharpSizes_withWebp
+                fluid(maxWidth: 500) {
+                  ...GatsbyImageSharpFluid_withWebp
                 }
               }
             }
@@ -459,6 +495,7 @@ Full example:
       }
     }
   }
+}
 ```
 
 To learn more about image processing check
@@ -470,10 +507,10 @@ To learn more about image processing check
 ## Site's `gatsby-node.js` example
 
 ```javascript
-const _ = require(`lodash`);
-const Promise = require(`bluebird`);
-const path = require(`path`);
-const slash = require(`slash`);
+const _ = require(`lodash`)
+const Promise = require(`bluebird`)
+const path = require(`path`)
+const slash = require(`slash`)
 
 // Implement the Gatsby API “createPages”. This is
 // called after the Gatsby bootstrap is finished so you have
@@ -482,7 +519,7 @@ const slash = require(`slash`);
 // Will create pages for WordPress pages (route : /{slug})
 // Will create pages for WordPress posts (route : /post/{slug})
 exports.createPages = ({ graphql, boundActionCreators }) => {
-  const { createPage } = boundActionCreators;
+  const { createPage } = boundActionCreators
   return new Promise((resolve, reject) => {
     // The “graphql” function allows us to run arbitrary
     // queries against the local WordPress graphql schema. Think of
@@ -508,12 +545,12 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
     )
       .then(result => {
         if (result.errors) {
-          console.log(result.errors);
-          reject(result.errors);
+          console.log(result.errors)
+          reject(result.errors)
         }
 
         // Create Page pages.
-        const pageTemplate = path.resolve("./src/templates/page.js");
+        const pageTemplate = path.resolve("./src/templates/page.js")
         // We want to create a detailed page for each
         // page node. We'll just use the WordPress Slug for the slug.
         // The Page ID is prefixed with 'PAGE_'
@@ -531,8 +568,8 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
             context: {
               id: edge.node.id,
             },
-          });
-        });
+          })
+        })
       })
       // ==== END PAGES ====
 
@@ -556,10 +593,10 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
           `
         ).then(result => {
           if (result.errors) {
-            console.log(result.errors);
-            reject(result.errors);
+            console.log(result.errors)
+            reject(result.errors)
           }
-          const postTemplate = path.resolve("./src/templates/post.js");
+          const postTemplate = path.resolve("./src/templates/post.js")
           // We want to create a detailed page for each
           // post node. We'll just use the WordPress Slug for the slug.
           // The Post ID is prefixed with 'POST_'
@@ -570,12 +607,12 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
               context: {
                 id: edge.node.id,
               },
-            });
-          });
-          resolve();
-        });
-      });
+            })
+          })
+          resolve()
+        })
+      })
     // ==== END POSTS ====
-  });
-};
+  })
+}
 ```

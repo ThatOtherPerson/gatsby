@@ -1,20 +1,16 @@
-/*global __PREFIX_PATHS__, __PATH_PREFIX__ */
+/*global __PATH_PREFIX__ */
+import PropTypes from "prop-types"
 import React from "react"
 import { Link, NavLink } from "react-router-dom"
-import PropTypes from "prop-types"
+import { polyfill } from "react-lifecycles-compat"
 import { createLocation, createPath } from "history"
 
-let pathPrefix = `/`
-if (typeof __PREFIX_PATHS__ !== `undefined` && __PREFIX_PATHS__) {
-  pathPrefix = __PATH_PREFIX__
-}
-
 export function withPrefix(path) {
-  return normalizePath(pathPrefix + path)
+  return normalizePath(`${__PATH_PREFIX__}/${path}`)
 }
 
 function normalizePath(path) {
-  return path.replace(/^\/\//g, `/`)
+  return path.replace(/\/+/g, `/`)
 }
 
 const NavLinkPropTypes = {
@@ -54,35 +50,36 @@ class GatsbyLink extends React.Component {
       IOSupported = true
     }
 
-    const { history } = context.router
-    const to = createLocation(props.to, null, null, history.location)
+    const { location } = context.router.history
+    const to = createLocation(props.to, null, null, location)
 
     this.state = {
       path: createPath(to),
       to,
       IOSupported,
+      location,
     }
     this.handleRef = this.handleRef.bind(this)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.to !== nextProps.to) {
-      const to = createLocation(nextProps.to, null, null, history.location)
-      this.setState({
-        path: createPath(to),
-        to,
-      })
-      // Preserve non IO functionality if no support
-      if (!this.state.IOSupported) {
-        ___loader.enqueue(this.state.path)
-      }
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (prevState.to === nextProps.to) return null
+    const to = createLocation(nextProps.to, null, null, prevState.location)
+    const path = createPath(to)
+    return { path, to }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Preserve non IO functionality if no support
+    if (this.props.to !== prevProps.to && !this.state.IOSupported) {
+      ___loader.enqueue(this.state.path)
     }
   }
 
   componentDidMount() {
     // Preserve non IO functionality if no support
     if (!this.state.IOSupported) {
-      ___loader.enqueue(this.state.path)
+      ___loader.enqueue(this.state.to.pathname)
     }
   }
 
@@ -92,13 +89,13 @@ class GatsbyLink extends React.Component {
     if (this.state.IOSupported && ref) {
       // If IO supported and element reference found, setup Observer functionality
       handleIntersection(ref, () => {
-        ___loader.enqueue(this.state.path)
+        ___loader.enqueue(this.state.to.pathname)
       })
     }
   }
 
   render() {
-    const { onClick, ...rest } = this.props
+    const { onClick, onMouseEnter, ...rest } = this.props
     let El
     if (Object.keys(NavLinkPropTypes).some(propName => this.props[propName])) {
       El = NavLink
@@ -108,6 +105,11 @@ class GatsbyLink extends React.Component {
 
     return (
       <El
+        onMouseEnter={e => {
+          // eslint-disable-line
+          onMouseEnter && onMouseEnter(e)
+          ___loader.hovering(this.state.path)
+        }}
         onClick={e => {
           // eslint-disable-line
           onClick && onClick(e)
@@ -176,7 +178,7 @@ GatsbyLink.contextTypes = {
   router: PropTypes.object,
 }
 
-export default GatsbyLink
+export default polyfill(GatsbyLink)
 
 export const navigateTo = to => {
   window.___navigateTo(to)

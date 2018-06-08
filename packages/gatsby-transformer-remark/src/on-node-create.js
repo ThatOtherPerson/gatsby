@@ -31,17 +31,12 @@ module.exports = async function onCreateNode(
     })
   }
 
-  const contentDigest = crypto
-    .createHash(`md5`)
-    .update(JSON.stringify(data))
-    .digest(`hex`)
   const markdownNode = {
     id: createNodeId(`${node.id} >>> MarkdownRemark`),
     children: [],
     parent: node.id,
     internal: {
-      content,
-      contentDigest,
+      content: data.content,
       type: `MarkdownRemark`,
     },
   }
@@ -50,9 +45,6 @@ module.exports = async function onCreateNode(
     title: ``, // always include a title
     ...data.data,
     _PARENT: node.id,
-    // TODO Depreciate this at v2 as much larger chance of conflicting with a
-    // user supplied field.
-    parent: node.id,
   }
 
   markdownNode.excerpt = data.excerpt
@@ -61,6 +53,11 @@ module.exports = async function onCreateNode(
   if (node.internal.type === `File`) {
     markdownNode.fileAbsolutePath = node.absolutePath
   }
+
+  markdownNode.internal.contentDigest = crypto
+    .createHash(`md5`)
+    .update(JSON.stringify(markdownNode))
+    .digest(`hex`)
 
   createNode(markdownNode)
   createParentChildLink({ parent: node, child: markdownNode })

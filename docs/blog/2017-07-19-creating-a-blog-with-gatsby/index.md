@@ -9,6 +9,7 @@ imageTitle: "Old typewriter"
 canonicalLink: "https://objectpartners.com/2017/07/19/creating-a-static-blog-with-gatsby/"
 publishedAt: "Object Partners, Inc."
 excerpt: "In this post, we'll take a deep dive into Gatsby and some of the new 1.0 features by creating a static blog. Let's get on it!"
+tags: ["getting-started", "blog", "markdown"]
 ---
 
 Gatsby is an incredible static site generator that allows for React to be used
@@ -255,15 +256,15 @@ We'll want to create the file `src/templates/blog-post.js` (please create the
 `src/templates` folder if it does not yet exist!).
 
 ```javascript
-import React from "react";
-import Helmet from "react-helmet";
+import React from "react"
+import Helmet from "react-helmet"
 
 // import '../css/blog-post.css'; // make it pretty!
 
 export default function Template({
   data, // this prop will be injected by the GraphQL query we'll write in a bit
 }) {
-  const { markdownRemark: post } = data; // data.markdownRemark holds our post data
+  const { markdownRemark: post } = data // data.markdownRemark holds our post data
   return (
     <div className="blog-post-container">
       <Helmet title={`Your Blog Name - ${post.frontmatter.title}`} />
@@ -275,7 +276,7 @@ export default function Template({
         />
       </div>
     </div>
-  );
+  )
 }
 ```
 
@@ -377,13 +378,13 @@ Gatsby, as detailed in its [Node API specification][node-spec]. However, we only
 care about one particular API in this instance, `createPages`.
 
 ```javascript
-const path = require("path");
+const path = require("path")
 
 exports.createPages = ({ boundActionCreators, graphql }) => {
-  const { createPage } = boundActionCreators;
+  const { createPage } = boundActionCreators
 
-  const blogPostTemplate = path.resolve(`src/templates/blog-post.js`);
-};
+  const blogPostTemplate = path.resolve(`src/templates/blog-post.js`)
+}
 ```
 
 Nothing super complex yet! We're using the `createPages` API (which Gatsby will
@@ -413,13 +414,8 @@ exports.createPages = ({ boundActionCreators, graphql }) => {
     ) {
       edges {
         node {
-          excerpt(pruneLength: 250)
-          html
-          id
           frontmatter {
-            date
             path
-            title
           }
         }
       }
@@ -466,13 +462,8 @@ exports.createPages = ({ boundActionCreators, graphql }) => {
     ) {
       edges {
         node {
-          excerpt(pruneLength: 250)
-          html
-          id
           frontmatter {
-            date
             path
-            title
           }
         }
       }
@@ -541,14 +532,14 @@ create `src/pages/tags.js`, the path `http://localhost:8000/tags/` will be
 available within the browser and the statically generated site.
 
 ```javascript
-import React from "react";
-import { Link } from "gatsby";
-import Helmet from "react-helmet";
+import React from "react"
+import { Link } from "gatsby"
+import Helmet from "react-helmet"
 
 // import '../css/index.css'; // add some style if you want!
 
 export default function Index({ data }) {
-  const { edges: posts } = data.allMarkdownRemark;
+  const { edges: posts } = data.allMarkdownRemark
   return (
     <div className="blog-posts">
       {posts
@@ -562,10 +553,10 @@ export default function Index({ data }) {
               <h2>{post.frontmatter.date}</h2>
               <p>{post.excerpt}</p>
             </div>
-          );
+          )
         })}
     </div>
-  );
+  )
 }
 
 export const pageQuery = graphql`
@@ -584,7 +575,7 @@ export const pageQuery = graphql`
       }
     }
   }
-`;
+`
 ```
 
 OK! So we've followed a similar approach to our blog post template, so this

@@ -3,23 +3,11 @@
 exports[`Babelrc actions/reducer allows adding a new plugin 1`] = `
 Object {
   "stages": Object {
-    "build-css": Object {
-      "options": Object {
-        "babelrc": false,
-        "cacheDirectory": true,
-      },
-      "plugins": Array [
-        Object {
-          "name": "test-babel-plugin",
-          "options": Object {},
-        },
-      ],
-      "presets": Array [],
-    },
     "build-html": Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -33,6 +21,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -46,6 +35,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -59,6 +49,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -75,23 +66,11 @@ Object {
 exports[`Babelrc actions/reducer allows adding a new preset 1`] = `
 Object {
   "stages": Object {
-    "build-css": Object {
-      "options": Object {
-        "babelrc": false,
-        "cacheDirectory": true,
-      },
-      "plugins": Array [],
-      "presets": Array [
-        Object {
-          "name": "test-babel-preset",
-          "options": Object {},
-        },
-      ],
-    },
     "build-html": Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [],
       "presets": Array [
@@ -105,6 +84,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [],
       "presets": Array [
@@ -118,6 +98,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [],
       "presets": Array [
@@ -131,6 +112,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [],
       "presets": Array [
@@ -147,66 +129,11 @@ Object {
 exports[`Babelrc actions/reducer handles custom .babelrc files 1`] = `
 Object {
   "stages": Object {
-    "build-css": Object {
-      "options": Object {
-        "babelrc": false,
-        "cacheDirectory": true,
-      },
-      "plugins": Array [
-        Object {
-          "name": "@babel/plugin-proposal/class-properties",
-          "options": Object {
-            "loose": true,
-          },
-        },
-        Object {
-          "name": "@babel/plugin-syntax-dynamic-import",
-          "options": Object {},
-        },
-        Object {
-          "name": "@babel/plugin-transform-runtime",
-          "options": Object {
-            "helpers": true,
-            "polyfill": false,
-            "regenerator": true,
-          },
-        },
-      ],
-      "presets": Array [
-        Object {
-          "name": "@babel/preset-env",
-          "options": Object {
-            "loose": true,
-            "modules": false,
-            "shippedProposals": true,
-            "sourceType": "unambiguous",
-            "targets": Object {
-              "browsers": Array [
-                "> 1%",
-                "IE >= 9",
-                "last 2 versions",
-              ],
-            },
-            "useBuiltIns": "usage",
-          },
-        },
-        Object {
-          "name": "@babel/preset-react",
-          "options": Object {
-            "pragma": "React.createElement",
-            "useBuiltIns": true,
-          },
-        },
-        Object {
-          "name": "@babel/preset-flow",
-          "options": Object {},
-        },
-      ],
-    },
     "build-html": Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -263,6 +190,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -319,6 +247,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -375,6 +304,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -434,18 +364,11 @@ Object {
 exports[`Babelrc actions/reducer sets default presets/plugins if there's no userland babelrc 1`] = `
 Object {
   "stages": Object {
-    "build-css": Object {
-      "options": Object {
-        "babelrc": false,
-        "cacheDirectory": true,
-      },
-      "plugins": Array [],
-      "presets": Array [],
-    },
     "build-html": Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -476,10 +399,8 @@ Object {
           "options": Object {
             "loose": true,
             "modules": false,
-            "shippedProposals": true,
-            "sourceType": "unambiguous",
             "targets": Object {
-              "browsers": Object {},
+              "node": "current",
             },
             "useBuiltIns": "usage",
           },
@@ -505,6 +426,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [],
       "presets": Array [],
@@ -513,6 +435,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [
         Object {
@@ -543,8 +466,6 @@ Object {
           "options": Object {
             "loose": true,
             "modules": false,
-            "shippedProposals": true,
-            "sourceType": "unambiguous",
             "targets": Object {
               "browsers": Object {},
             },
@@ -572,6 +493,7 @@ Object {
       "options": Object {
         "babelrc": false,
         "cacheDirectory": true,
+        "sourceType": "unambiguous",
       },
       "plugins": Array [],
       "presets": Array [],
@@ -585,20 +507,20 @@ Object {
   "babelrc": false,
   "cacheDirectory": true,
   "plugins": Array [
-    "/Users/kylemathews/programs/gatsby-v2/packages/babel-plugin-remove-graphql-queries/index.js",
-    "/Users/kylemathews/programs/gatsby-v2/node_modules/react-hot-loader/babel.js",
+    "/path/to/module/babel-plugin-remove-graphql-queries",
+    "/path/to/module/react-hot-loader/babel",
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/plugin-proposal-class-properties/lib/index.js",
+      "/path/to/module/@babel/plugin-proposal-class-properties",
       Object {
         "loose": true,
       },
     ],
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/plugin-syntax-dynamic-import/lib/index.js",
+      "/path/to/module/@babel/plugin-syntax-dynamic-import",
       Object {},
     ],
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/plugin-transform-runtime/lib/index.js",
+      "/path/to/module/@babel/plugin-transform-runtime",
       Object {
         "helpers": true,
         "polyfill": false,
@@ -608,12 +530,10 @@ Object {
   ],
   "presets": Array [
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/preset-env/lib/index.js",
+      "/path/to/module/@babel/preset-env",
       Object {
         "loose": true,
         "modules": false,
-        "shippedProposals": true,
-        "sourceType": "unambiguous",
         "targets": Object {
           "browsers": Object {},
         },
@@ -621,7 +541,7 @@ Object {
       },
     ],
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/preset-react/lib/index.js",
+      "/path/to/module/@babel/preset-react",
       Object {
         "development": true,
         "pragma": "React.createElement",
@@ -629,10 +549,11 @@ Object {
       },
     ],
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/preset-flow/lib/index.js",
+      "/path/to/module/@babel/preset-flow",
       Object {},
     ],
   ],
+  "sourceType": "unambiguous",
 }
 `;
 
@@ -641,20 +562,20 @@ Object {
   "babelrc": false,
   "cacheDirectory": true,
   "plugins": Array [
-    "/Users/kylemathews/programs/gatsby-v2/packages/babel-plugin-remove-graphql-queries/index.js",
-    "/Users/kylemathews/programs/gatsby-v2/node_modules/babel-plugin-dynamic-import-node/lib/index.js",
+    "/path/to/module/babel-plugin-remove-graphql-queries",
+    "/path/to/module/babel-plugin-dynamic-import-node",
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/plugin-proposal-class-properties/lib/index.js",
+      "/path/to/module/@babel/plugin-proposal-class-properties",
       Object {
         "loose": true,
       },
     ],
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/plugin-syntax-dynamic-import/lib/index.js",
+      "/path/to/module/@babel/plugin-syntax-dynamic-import",
       Object {},
     ],
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/plugin-transform-runtime/lib/index.js",
+      "/path/to/module/@babel/plugin-transform-runtime",
       Object {
         "helpers": true,
         "polyfill": false,
@@ -664,12 +585,10 @@ Object {
   ],
   "presets": Array [
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/preset-env/lib/index.js",
+      "/path/to/module/@babel/preset-env",
       Object {
         "loose": true,
         "modules": false,
-        "shippedProposals": true,
-        "sourceType": "unambiguous",
         "targets": Object {
           "browsers": Object {},
         },
@@ -677,7 +596,7 @@ Object {
       },
     ],
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/preset-react/lib/index.js",
+      "/path/to/module/@babel/preset-react",
       Object {
         "development": true,
         "pragma": "React.createElement",
@@ -685,9 +604,10 @@ Object {
       },
     ],
     Array [
-      "/Users/kylemathews/programs/gatsby-v2/node_modules/@babel/preset-flow/lib/index.js",
+      "/path/to/module/@babel/preset-flow",
       Object {},
     ],
   ],
+  "sourceType": "unambiguous",
 }
 `;

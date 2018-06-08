@@ -7,7 +7,7 @@ for details.
 
 ## Install
 
-`yarn add gatsby-plugin-react-css-modules`
+`npm install --save gatsby-plugin-react-css-modules`
 
 ## How to use
 
@@ -29,7 +29,7 @@ plugins: [
       exclude: `\/global\/`,
     },
   },
-];
+]
 ```
 
 Files must be named using the pattern `filename.module.css` for Gatsby to treat

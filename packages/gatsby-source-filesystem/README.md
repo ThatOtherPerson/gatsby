@@ -38,7 +38,7 @@ module.exports = {
       },
     },
   ],
-};
+}
 ```
 
 ## How to query
@@ -89,13 +89,13 @@ createFilePath({
 
 #### Example usage
 
-The following is taken from [Gatsby Tutorial, Part Four](https://www.gatsbyjs.org/tutorial/part-four/#programmatically-creating-pages-from-data) and is used to create URL slugs for markdown pages.
+The following is taken from [Gatsby Tutorial, Part Seven](https://www.gatsbyjs.org/tutorial/part-seven/) and is used to create URL slugs for markdown pages.
 
 ```javascript
-const { createFilePath } = require(`gatsby-source-filesystem`);
+const { createFilePath } = require(`gatsby-source-filesystem`)
 
 exports.onCreateNode = ({ node, getNode, boundActionCreators }) => {
-  const { createNodeField } = boundActionCreators;
+  const { createNodeField } = boundActionCreators
   // Ensures we are processing only markdown files
   if (node.internal.type === "MarkdownRemark") {
     // Use `createFilePath` to turn markdown files in our `data/faqs` directory into `/faqs/slug`
@@ -103,21 +103,21 @@ exports.onCreateNode = ({ node, getNode, boundActionCreators }) => {
       node,
       getNode,
       basePath: "data/faqs/",
-    });
+    })
 
     // Creates new query'able field with name of 'slug'
     createNodeField({
       node,
       name: "slug",
       value: `/faqs${relativeFilePath}`,
-    });
+    })
   }
-};
+}
 ```
 
 ### createRemoteFileNode
 
-When building source plugins for remote data sources such as headless CMSs, their data will often link to files stored remotely that are often convenient to download so you can work with locally.
+When building source plugins for remote data sources such as headless CMSs, their data will often link to files stored remotely that are often convenient to download so you can work with them locally.
 
 The `createRemoteFileNode` helper makes it easy to download remote files and add them to your site's GraphQL schema.
 
@@ -125,16 +125,16 @@ The `createRemoteFileNode` helper makes it easy to download remote files and add
 createRemoteFileNode({
   // The source url of the remote file
   url: `https://example.com/a-file.jpg`,
-  
+
   // The redux store which is passed to all Node APIs.
   store,
-  
+
   // Gatsby's cache which the helper uses to check if the file has been downloaded already. It's passed to all Node APIs.
   cache,
-  
+
   // The boundActionCreator used to create nodes
   createNode,
-  
+
   // OPTIONAL
   // Adds htaccess authentication to the download request if passed in.
   auth: { user: `USER`, password: `PASSWORD` },
@@ -146,7 +146,7 @@ createRemoteFileNode({
 The following example is pulled from [gatsby-source-wordpress](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-source-wordpress). Downloaded files are created as `File` nodes and then linked to the WordPress Media node, so it can be queried both as a regular `File` node and from the `localFile` field in the Media node.
 
 ```javascript
-const { createRemoteFileNode } = require(`gatsby-source-filesystem`);
+const { createRemoteFileNode } = require(`gatsby-source-filesystem`)
 
 exports.downloadMediaFiles = ({ nodes, store, cache, createNode, _auth }) => {
   nodes.map(async node => {
@@ -156,22 +156,24 @@ exports.downloadMediaFiles = ({ nodes, store, cache, createNode, _auth }) => {
     if (node.__type === `wordpress__wp_media`) {
       try {
         fileNode = await createRemoteFileNode({
-            url: node.source_url,
-            store,
-            cache,
-            createNode,
-            auth: _auth,
-          })
-        } catch (e) {
-          // Ignore
-        }
+          url: node.source_url,
+          store,
+          cache,
+          createNode,
+          auth: _auth,
+        })
+      } catch (e) {
+        // Ignore
       }
+    }
 
-      // Adds a field `localFile` to the node
-      // ___NODE appendix tells Gatsby that this field will link to another node
-      if (fileNode) {
-        node.localFile___NODE = fileNode.id
-      }
+    // Adds a field `localFile` to the node
+    // ___NODE appendix tells Gatsby that this field will link to another node
+    if (fileNode) {
+      node.localFile___NODE = fileNode.id
+    }
   })
-};
+}
 ```
+
+The file node can then be queried using GraphQL. See an example of this in the [gatsby-source-wordpress README](/packages/gatsby-source-wordpress/#image-processing) where downloaded images are queried using [gatsby-transformer-sharp](/packages/gatsby-transformer-sharp/) to use in the component [gatsby-image](/packages/gatsby-image/).

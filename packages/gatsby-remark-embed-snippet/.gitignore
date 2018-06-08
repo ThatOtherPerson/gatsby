@@ -1,2 +1,2 @@
-/index.js
-/__tests__
+/*.js
+yarn.lock

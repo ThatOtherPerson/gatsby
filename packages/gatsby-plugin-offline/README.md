@@ -16,7 +16,7 @@ in the service worker.
 
 ```javascript
 // In your gatsby-config.js
-plugins: [`gatsby-plugin-offline`];
+plugins: [`gatsby-plugin-offline`]
 ```
 
 ## Overriding options
@@ -30,9 +30,12 @@ and AppCache setup by changing these options so tread carefully.
 ```javascript
 const options = {
   staticFileGlobs: [
-    `${rootDir}/**/*.{js,woff2}`,
+    `${rootDir}/**/*.{woff2}`,
+    `${rootDir}/commons-*js`,
+    `${rootDir}/app-*js`,
     `${rootDir}/index.html`,
     `${rootDir}/manifest.json`,
+    `${rootDir}/manifest.webmanifest`,
     `${rootDir}/offline-plugin-app-shell-fallback/index.html`,
   ],
   stripPrefix: rootDir,
@@ -55,5 +58,5 @@ const options = {
     },
   ],
   skipWaiting: false,
-};
+}
 ```

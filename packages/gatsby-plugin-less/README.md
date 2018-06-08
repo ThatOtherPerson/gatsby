@@ -4,16 +4,16 @@ Provides drop-in support for Less stylesheets
 
 ## Install
 
-`yarn add gatsby-plugin-less`
+`npm install --save less gatsby-plugin-less`
 
 ## How to use
 
-1. Include the plugin in your `gatsby-config.js` file.
-2. Write your stylesheets in Less and require or import them as normal.
+1.  Include the plugin in your `gatsby-config.js` file.
+2.  Write your stylesheets in Less and require or import them as normal.
 
 ```javascript
 // in gatsby-config.js
-plugins: [`gatsby-plugin-less`];
+plugins: [`gatsby-plugin-less`]
 ```
 
 If you need to pass options to Less use the plugins options; see [less-loader](https://github.com/webpack-contrib/less-loader)
@@ -28,7 +28,7 @@ plugins: [
       strictMath: true,
     },
   },
-];
+]
 ```
 
 ### With CSS Modules
@@ -52,5 +52,48 @@ plugins: [
       postCssPlugins: [somePostCssPlugin()],
     },
   },
-];
+]
 ```
+
+## Breaking changes history
+
+<!-- Please keep the breaking changes list ordered with the newest change at the top -->
+
+### v2.0.0
+
+- `less` is moved to a peer dependency. Installing the package
+alongside `gatsby-plugin-less` is now required. Use `npm install --save less`
+
+- support Gatsby v2 only
+
+- `theme` option has been removed. You can pass configuration object to less-loader:
+
+```diff
+plugins: [
+  {
+    resolve: `gatsby-plugin-less`,
+    options: {
+-      theme: {
+-        "text-color": `#fff`,
+-      }
++      modifyVars: {
++        "text-color": `#fff`,
++      }
+    },
+  },
+]
+```
+
+```diff
+plugins: [
+  {
+    resolve: `gatsby-plugin-less`,
+    options: {
+-      theme: `./src/theme.js`,
++      modifyVars: require(`./src/theme.js`),
+    },
+  },
+]
+```
+
+

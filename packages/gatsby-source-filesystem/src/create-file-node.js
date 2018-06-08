@@ -7,13 +7,6 @@ const prettyBytes = require(`pretty-bytes`)
 const md5File = require(`bluebird`).promisify(require(`md5-file`))
 const crypto = require(`crypto`)
 
-const createId = path => {
-  const slashed = slash(path)
-  return `${slashed} absPath of file`
-}
-
-exports.createId = createId
-
 exports.createFileNode = async (
   pathToFile,
   createNodeId,
@@ -43,6 +36,7 @@ exports.createFileNode = async (
     internal = {
       contentDigest,
       type: `Directory`,
+      description: `Directory "${path.relative(process.cwd(), slashed)}"`,
     }
   } else {
     const contentDigest = await md5File(slashedFile.absolutePath)
@@ -51,6 +45,7 @@ exports.createFileNode = async (
       contentDigest,
       type: `File`,
       mediaType: mediaType ? mediaType : `application/octet-stream`,
+      description: `File "${path.relative(process.cwd(), slashed)}"`,
     }
   }
 
