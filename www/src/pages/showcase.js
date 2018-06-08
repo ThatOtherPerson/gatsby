@@ -340,7 +340,7 @@ class ShowcasePage extends Component {
             <div css={{flex: 1}}>{''}</div>
             <div css={{marginRight: 15}}>Want to get featured?</div>
             {/* TODO: maybe have a site submission issue template */}
-            <a href="https://github.com/gatsbyjs/gatsby/issues/new?template=feature_request.md" target="_blank">
+            <a href="https://github.com/gatsbyjs/gatsby/issues/new?template=feature_request.md" target="_blank" rel="noopener noreferrer">
               <div css={{backgroundColor: '#663399', color: 'white', padding: '5px 10px', fontWeight: 'normal'}}>Submit your Site
                 <div css={{marginLeft: '5px', display: 'inline'}}>→</div>
               </div>
