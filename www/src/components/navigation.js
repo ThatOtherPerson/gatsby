@@ -43,6 +43,8 @@ const NavItem = ({ linkTo, children }) => (
 export default ({ pathname }) => {
   const isHomepage = pathname === `/`
   const isBlog = pathname === `/blog/`
+  const isShowcase = pathname === `/showcase/`
+
   let styles = {}
   if (isHomepage) {
     styles.backgroundColor = `rgba(255,255,255,0)`
@@ -57,6 +59,9 @@ export default ({ pathname }) => {
       position: isHomepage || isBlog ? `absolute` : `fixed`,
       backgroundColor: colors.ui.whisper,
     }
+  } else if (isShowcase) {
+    styles.position = `fixed`
+    styles.top = 0
   }
   const socialIconsStyles = {
     color: colors.lilac,
