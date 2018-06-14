@@ -8,6 +8,7 @@ import hex2rgba from "hex2rgba"
 
 import Layout from "../components/layout"
 import SearchIcon from "../components/search-icon"
+import ShowcaseNavigationMobile from "../components/showcase-navigation-mobile";
 //import FuturaParagraph from "../components/futura-paragraph"
 //import Container from "../components/container"
 import { options, /* rhythm, */ scale, rhythm } from "../utils/typography"
@@ -477,6 +478,7 @@ class ShowcasePage extends Component {
         <Helmet>
           <title>Showcase</title>
         </Helmet>
+        <ShowcaseNavigationMobile />
         <section
           className="featured-sites"
           css={{

@@ -35,4 +35,5 @@ module.exports = {
   },
   logoOffset: 1.8,
   headerHeight: `3.5rem`,
+  filterNavigationHeight: `3.85rem`,
 }
