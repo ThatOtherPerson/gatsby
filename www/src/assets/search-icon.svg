@@ -1,0 +1,27 @@
+
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M11.4285714,10.0571429 L10.7017143,10.0571429 L10.4502857,9.80571429 C11.3462857,8.768 11.8857143,7.41942857 11.8857143,5.94285714 C11.8857143,2.66057143 9.22514286,0 5.94285714,0 C2.66057143,0 0,2.66057143 0,5.94285714 C0,9.22514286 2.66057143,11.8857143 5.94285714,11.8857143 C7.41942857,11.8857143 8.768,11.3462857 9.80571429,10.4548571 L10.0571429,10.7062857 L10.0571429,11.4285714 L14.6285714,15.9908571 L15.9908571,14.6285714 L11.4285714,10.0571429 Z M5.94285714,10.0571429 C3.67085714,10.0571429 1.82857143,8.21485714 1.82857143,5.94285714 C1.82857143,3.67085714 3.67085714,1.82857143 5.94285714,1.82857143 C8.21485714,1.82857143 10.0571429,3.67085714 10.0571429,5.94285714 C10.0571429,8.21485714 8.21485714,10.0571429 5.94285714,10.0571429 Z" id="path-1"></path>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mobile/showcase-navigation" transform="translate(-26.000000, -25.000000)">
+            <g id="Showcase-Navigation-Mobile">
+                <g id="Search" transform="translate(15.000000, 14.000000)">
+                    <g id="Search-docs" transform="translate(11.000000, 6.000000)">
+                        <g id="icons/search" transform="translate(0.000000, 5.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="Shape" fill="#111111" fill-rule="nonzero" xlink:href="#path-1"></use>
+                            <g id="colors/lilac" mask="url(#mask-2)" fill="#9D7CBF" fill-rule="evenodd">
+                                <rect id="Rectangle-4" x="0" y="0" width="16" height="16"></rect>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

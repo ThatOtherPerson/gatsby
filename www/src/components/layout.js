@@ -59,6 +59,7 @@ class DefaultLayout extends React.Component {
 
   render() {
     const isHomepage = this.props.location.pathname === `/`
+    const isShowcase = this.props.location.pathname === `/showcase/`
 
     let isModal = false
     if (!windowWidth && typeof window !== `undefined`) {
@@ -164,7 +165,7 @@ class DefaultLayout extends React.Component {
         <div
           className={`main-body`}
           css={{
-            paddingTop: 0,
+            paddingTop: isShowcase ? presets.headerHeight : 0,
             [presets.Tablet]: {
               margin: `0 auto`,
               paddingTop: isHomepage ? 0 : presets.headerHeight,

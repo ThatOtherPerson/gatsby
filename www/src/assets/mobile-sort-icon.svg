@@ -1,0 +1,22 @@
+<svg width="24px" height="22px" viewBox="0 0 24 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M5.55984,8.42016 L5.55984,7.05984 L18.44016,7.05984 L18.44016,8.42016 L5.55984,8.42016 Z M5.55984,12.26016 L5.55984,10.89984 L18.44016,10.89984 L18.44016,12.26016 L5.55984,12.26016 Z M5.55984,16.10016 L5.55984,14.73984 L18.44016,14.73984 L18.44016,16.10016 L5.55984,16.10016 Z M5.76,19.74 L2.88,22.62 L-8.8817842e-16,19.74 L0.849,18.891 L2.28,20.322 L2.28,13.98 L3.48,13.98 L3.48,20.322 L4.911,18.891 L5.76,19.74 Z M18.24,4.38 L21.12,1.5 L24,4.38 L23.151,5.229 L21.72,3.798 L21.72,10.14 L20.52,10.14 L20.52,3.798 L19.089,5.229 L18.24,4.38 Z" id="path-1"></path>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mobile/showcase-navigation" transform="translate(-316.000000, -21.000000)">
+            <g id="Showcase-Navigation-Mobile">
+                <g id="icons/sort" transform="translate(316.000000, 20.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="Combined-Shape" fill="#000000" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    <g id="colors/gray" mask="url(#mask-2)" fill="#9B9B9B" fill-rule="evenodd">
+                        <rect id="Rectangle-4" x="0" y="0" width="24" height="24"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
